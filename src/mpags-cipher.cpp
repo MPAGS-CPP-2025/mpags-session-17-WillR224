@@ -3,6 +3,7 @@
 #include "CipherType.hpp"
 #include "ProcessCommandLine.hpp"
 #include "TransformChar.hpp"
+#include "exceptions.cpp"
 
 #include <algorithm>
 #include <fstream>
@@ -15,15 +16,22 @@ int main(int argc, char* argv[])
     // Convert the command-line arguments into a more easily usable form
     const std::vector<std::string> cmdLineArgs{argv, argv + argc};
 
-    // Options that might be set by the command-line arguments
     ProgramSettings settings;
 
     // Process command line arguments
-    const bool cmdLineStatus{processCommandLine(cmdLineArgs, settings)};
-
-    // Any failure in the argument processing means we can't continue
-    // Use a non-zero return value to indicate failure
-    if (!cmdLineStatus) {
+    try{
+        settings = processCommandLine(cmdLineArgs);
+    }
+    catch (MissingArgument& e){
+        std::cerr << "[error] missing argument: " << e.what() << std::endl;
+        return 1;
+    }
+    catch (UnknownArgument& e){
+        std::cerr << "[error] unknown argument: " << e.what() << std::endl;
+        return 1;
+    }
+    catch (std::invalid_argument& e){
+        std::cerr << "[error] invalid argument: " << e.what() << std::endl;
         return 1;
     }
 
@@ -112,7 +120,13 @@ int main(int argc, char* argv[])
 
     // Run the cipher(s) on the input text, specifying whether to encrypt/decrypt
     for (const auto& cipher : ciphers) {
-        cipherText = cipher->applyCipher(cipherText, settings.cipherMode);
+        try{
+            cipherText = cipher->applyCipher(cipherText, settings.cipherMode);
+        }
+        catch (InvalidKey& e){
+            std::cerr << "[error]: " << e.what() << std::endl;
+            return 1;
+        }
     }
 
     // Output the encrypted/decrypted text to stdout/file

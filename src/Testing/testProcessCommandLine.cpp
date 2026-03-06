@@ -7,9 +7,7 @@ TEST(CommandLine, HelpFoundCorrectly)
 {
     ProgramSettings settings;
     const std::vector<std::string> cmdLine{"mpags-cipher", "--help"};
-    const bool res{processCommandLine(cmdLine, settings)};
-
-    EXPECT_TRUE(res);
+    EXPECT_NO_THROW(settings = processCommandLine(cmdLine));
     EXPECT_TRUE(settings.helpRequested);
 }
 

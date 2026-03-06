@@ -40,7 +40,6 @@ struct ProgramSettings {
  * \param settings The program settings to be set according to the result of the processing
  * \return true if the arguments could be successfully parsed, false otherwise
  */
-bool processCommandLine(const std::vector<std::string>& cmdLineArgs,
-                        ProgramSettings& settings);
+ProgramSettings processCommandLine(const std::vector<std::string>& cmdLineArgs);
 
 #endif    // MPAGSCIPHER_PROCESSCOMMANDLINE_HPP
